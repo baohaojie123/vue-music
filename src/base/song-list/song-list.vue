@@ -1,7 +1,7 @@
 <template>
   <div class="song-list">
     <ul>
-      <li v-for="song in songs" :key="song.id" class="item">
+      <li @click="selectItem(song,index)" v-for="(song,index) in songs" :key="song.id" class="item">
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
           <p class="desc">{{getDesc(song)}}</p>
@@ -22,6 +22,12 @@ export default {
   methods: {
     getDesc (song) {
       return `${song.singer}。${song.album}`
+    },
+    selectItem (item, index) {
+      // 这是个基础组件，不去写业务逻辑，只派发事件，
+      // 告诉外面的父组件，我这个东西被点击了，以及点击的元素是什么，索引是什么
+      // 虽然item没有用 但是子组件本身相关 不关心外部，只是把自身能够提供的数据通过事件传递出去
+      this.$emit('select', item, index)
     }
   }
 }

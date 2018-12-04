@@ -18,7 +18,7 @@
     <!--要计算scroll的高度 所以吧songs作为数据传进去-->
     <scroll @scroll="scroll" :probe-type="probeType" :listen-scroll="listenScroll" :songs="songs" class="list" ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs"></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -32,6 +32,7 @@ import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
 import Loading from 'base/loading/loading'
 import {prefixStyle} from 'common/js/dom'
+import {mapActions} from 'vuex'
 
 const RESERVED_HEIGHT = 40
 const transform = prefixStyle('transform')
@@ -81,7 +82,19 @@ export default {
     },
     back () {
       this.$router.back()
-    }
+    },
+    selectItem (item, index) {
+      // 设置playlist sequencelist currentlist playstate fullScreen
+      this.selectPlay({
+        // 这个item是song 但是我们需要的是songs 所以这个item没有用
+        // action调用之后，mutations改变，player里面的数据（playlist,fullScreen）就会改变
+        list: this.songs,
+        index
+      })
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   watch: {
     scrollY (newY) {
