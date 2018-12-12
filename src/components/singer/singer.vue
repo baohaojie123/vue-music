@@ -1,7 +1,8 @@
+import {singer} from "../../store/getters";
 <template>
-  <div class="singer">
+  <div class="singer" ref="singer">
     <!--<list-view :data="singers"></list-view>-->
-    <listview :data="singers" @select="selectSinger"></listview>
+    <listview :data="singers" @select="selectSinger" ref="list"></listview>
     <router-view></router-view>
   </div>
 </template>
@@ -12,13 +13,13 @@ import {ERR_OK} from 'api/config'
 import Singer from 'common/js/singer'
 // import ListView from 'base/listview/listview'
 import Listview from 'base/listview/listview'
+import {playlistMixin} from 'common/js/mixin'
 // 发送数据语法糖
 import {mapMutations} from 'vuex'
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10
-
-
 export default {
+  mixins: [playlistMixin],
   data () {
     return {
       singers: []
@@ -28,6 +29,12 @@ export default {
     this._getSingerList()
   },
   methods: {
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      // 非组件的ref本来指向的就是DOM了，当然不用加$el
+      this.$refs.singer.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     selectSinger (singer) {
       this.$router.push({
         path: `/singer/${singer.id}`

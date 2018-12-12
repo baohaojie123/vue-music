@@ -60,3 +60,4 @@ function genUrlMid (mids, types) {
     }
   }
 }
+

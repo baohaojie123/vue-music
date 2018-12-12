@@ -7,7 +7,7 @@
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
         <!--歌曲列表渲染完再出现按钮-->
-        <div class="play" v-show="songs.length>0" ref="playBtn">
+        <div class="play" v-show="songs.length>0" ref="playBtn" @click="random">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -33,11 +33,15 @@ import SongList from 'base/song-list/song-list'
 import Loading from 'base/loading/loading'
 import {prefixStyle} from 'common/js/dom'
 import {mapActions} from 'vuex'
+import {playlistMixin} from 'common/js/mixin'
 
 const RESERVED_HEIGHT = 40
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
 export default {
+  // 一个组件可以插入多个mixin 组件同名的方法可以覆盖mixin里面的方法
+  mixins: [playlistMixin],
+  // 可以接收的数据
   props: {
     bgImage: {
       type: String,
@@ -76,6 +80,11 @@ export default {
     this.$refs.list.$el.style.top = `${this.imageHeight}px`
   },
   methods: {
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.list.$el.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     scroll (pos) {
       // 上滑为- 下滑为+
       this.scrollY = pos.y
@@ -84,7 +93,7 @@ export default {
       this.$router.back()
     },
     selectItem (item, index) {
-      // 设置playlist sequencelist currentlist playstate fullScreen
+      // 设置playlist sequencelist currentindex playstate fullScreen
       this.selectPlay({
         // 这个item是song 但是我们需要的是songs 所以这个item没有用
         // action调用之后，mutations改变，player里面的数据（playlist,fullScreen）就会改变
@@ -93,8 +102,15 @@ export default {
       })
     },
     ...mapActions([
-      'selectPlay'
-    ])
+      'selectPlay',
+      'randomPlay'
+    ]),
+    // 随机播放按钮
+    random () {
+      this.randomPlay({
+        list: this.songs
+      })
+    }
   },
   watch: {
     scrollY (newY) {

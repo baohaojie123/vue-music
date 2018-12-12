@@ -19,10 +19,10 @@ export default class Song {
     this.url = url
   }
   getLyric () {
+    // 如果已经有lyric 不需要每次送发生变化就请求歌词 getLyric()返回Promise
     if (this.lyric) {
       return Promise.resolve(this.lyric)
     }
-
     return new Promise((resolve, reject) => {
       getLyric(this.mid).then((res) => {
         if (res.retcode === ERR_OK) {

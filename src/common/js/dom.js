@@ -46,6 +46,5 @@ export function prefixStyle (style) {
     return style
   }
   // 第一个首字母大写 +  剩余部分
-  console.log(style)
   return vendor + style.charAt(0).toUpperCase() + style.substr(1)
 }

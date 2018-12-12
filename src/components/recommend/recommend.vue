@@ -1,5 +1,5 @@
 <template>
-<div class="recommend">
+<div class="recommend" ref="recommend">
     <!--scroll监听到discList数据变化 然后重新计算-->
     <scroll ref="scroll" class="recommend-content" :data="discList">
         <!--better-scroll作用域父子集-->
@@ -18,7 +18,7 @@
             <div class="recommend-list">
                 <h1 class="list-title">热门歌单推荐</h1>
                 <ul>
-                    <li v-for="item in discList" :key="item.dissid" class="item">
+                    <li @click="selectItem(item)" v-for="item in discList" :key="item.dissid" class="item">
                         <div class="icon">
                             <!--<img width="60" height="60" :src="item.imgurl" >-->
                             <img width="60" height="60" v-lazy="item.imgurl" >
@@ -37,6 +37,7 @@
             <loading></loading>
         </div>
     </scroll>
+    <router-view></router-view>
 </div>
 </template>
 
@@ -46,9 +47,10 @@ import Scroll from 'base/scroll/scroll'
 import Slider from 'base/slider/slider'
 import {getRecommend, getDiscList} from 'api/recommend'
 import {ERR_OK} from 'api/config'
-
+import {playlistMixin} from 'common/js/mixin'
 
 export default {
+  mixins: [playlistMixin],
   data () {
     return {
       recommends: [],
@@ -62,6 +64,16 @@ export default {
     // }, 1000)
   },
   methods: {
+    selectItem (item) {
+      this.$router.push({
+        path: `/recommend/${item.dissid}`
+      })
+    },
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.recommend.style.bottom = bottom
+      this.$refs.scroll.refresh()
+    },
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
