@@ -34,3 +34,25 @@ export function getDiscList () {
     return Promise.resolve(res.data)
   })
 }
+// 获取歌曲列表数据的方法封装好了，在disc.vue中就可以发起这个请求，获取这个数据
+export function getSongList (disstid) {
+  const url = '/api/getSongList'
+  const data = Object.assign({}, commonParams, {
+    disstid,
+    type: 1,
+    json: 1,
+    utf8: 1,
+    onlysong: 0,
+    platform: 'yqq',
+    hostUin: 0,
+    needNewCode: 0,
+    // g_tk: 67232076
+    g_tk: 487535770
+  })
+  return axios.get(url, {
+    params: data
+  }).then(res => {
+    return Promise.resolve(res.data)
+  })
+}
+

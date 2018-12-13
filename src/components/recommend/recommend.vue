@@ -48,6 +48,7 @@ import Slider from 'base/slider/slider'
 import {getRecommend, getDiscList} from 'api/recommend'
 import {ERR_OK} from 'api/config'
 import {playlistMixin} from 'common/js/mixin'
+import {mapMutations} from 'vuex'
 
 export default {
   mixins: [playlistMixin],
@@ -64,10 +65,13 @@ export default {
     // }, 1000)
   },
   methods: {
+    // 当点击列表的时候，把vuex数据写进去，切到disc组件的时候，在从vuex把数据拿出来，实现路由之间数据通讯的功能
     selectItem (item) {
       this.$router.push({
         path: `/recommend/${item.dissid}`
       })
+      // 这样就能更改state里面的disc{}，然后disc.vue里面就可以接收这个数据
+      this.setDisc(item)
     },
     handlePlaylist (playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
@@ -98,7 +102,10 @@ export default {
         this.$refs.scroll.refresh()
         this.checkLoaded = true
       }
-    }
+    },
+    ...mapMutations({
+      setDisc: 'SET_DISC'
+    })
   },
   components: {
     Slider, Scroll, Loading

@@ -49,7 +49,10 @@ export default {
     },
     songs: {
       type: Array,
-      default: null
+      // default: function () {
+      //   return []
+      // }
+      default: () => []
     },
     title: {
       type: String,

@@ -15,6 +15,7 @@ const state = {
   mode: playMode.sequence,
   // 当前播放的索引   currentSong可以根据currentIndex与playlist计算出来
   currentIndex: -1,
+  // 歌单对象
   disc: {},
   topList: {},
   searchHistory: loadSearch(),

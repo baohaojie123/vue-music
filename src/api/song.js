@@ -31,6 +31,7 @@ export function getSongsUrl (songs) {
     mids.push(song.mid)
     types.push(0)
   })
+  console.log(songs)
   const data = Object.assign({}, commonParams, {
     g_tk: 5381,
     format: 'json',
