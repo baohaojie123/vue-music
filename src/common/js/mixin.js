@@ -1,4 +1,6 @@
-import {mapGetters} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
+import {playMode} from 'common/js/config'
+import {shuffle} from 'common/js/util'
 // 这是几个组件共用的代码
 export const playlistMixin = {
   computed: {
@@ -31,3 +33,85 @@ export const playlistMixin = {
     }
   }
 }
+// 播放模式
+export const playerMixin = {
+  computed: {
+    iconMode () {
+      return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
+    },
+    ...mapGetters([
+      'sequenceList',
+      'currentSong',
+      'playlist',
+      'mode'
+    ])
+  },
+  methods: {
+    ...mapMutations({
+      setPlayingState: 'SET_PLAYING_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlaylist: 'SET_PLAYLIST'
+    }),
+    changeMode () {
+      // mode要通过vuex的mutation，设置到state上
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      let list = null
+      if (mode === playMode.random) {
+        list = shuffle(this.sequenceList)
+      } else {
+        list = this.sequenceList
+      }
+      // 修改Playlist 但是此时currentSong不变 playlist改变的时候 也要currentindex改变
+      this.resetCurrentIndex(list)
+      this.setPlaylist(list)
+      // 此时更换模式，如果暂停歌曲，更换模式之后就会播放歌曲，这是因为currentsong改变了，触发watch事件， 但是currentSong.id没有变
+    },
+    resetCurrentIndex (list) {
+      // 在list里面找到当前歌曲对应的一个索引
+      let index = list.findIndex((item) => {
+        return item.id === this.currentSong.id
+      })
+      this.setCurrentIndex(index)
+    }
+  }
+}
+// 搜索歌曲
+
+export const searchMixin = {
+  data () {
+    return {
+      query: ''
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'searchHistory'
+    ])
+  },
+  methods: {
+    // 把search-box里面的input给blur（移开焦点）了 search是searbox的父组件，就可以调用子组件的方法,最终实现滚动之前，手机键盘收起的功能
+    blurInput () {
+      this.$refs.searchBox.blur()
+    },
+    // 保存搜索结果 如果这里的历史只需保存在组件中，则只需要调用mutation就可以。但是如果要保存到localStorage,实现永久保存，这里我们就需要封装一个action
+    saveSearch () {
+      this.saveSearchHistory(this.query)
+    },
+    onQueryChange (query) {
+      // 处理带空格的情况
+      this.query = query
+    },
+    addQuery (query) {
+      // 把query设置进去
+      this.$refs.searchBox.setQuery(query)
+    },
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory'
+    ])
+  }
+}
+
+

@@ -67,7 +67,7 @@ export function processSongsUrl (songs) {
   })
 }
 // singer是一个数组 我们只要其name属性   eg：薛之谦/李好
-function filterSinger (singer) {
+export function filterSinger (singer) {
   let ret = []
   if (!singer) {
     return ''

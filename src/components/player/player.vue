@@ -83,11 +83,12 @@
             <i :class="miniIcon" @click.stop="togglePlaying" class="icon-mini"></i>
           </progress-circle>
       </div>
-      <div class="control">
+      <div class="control" @click.stop="showPlaylist">
         <i class="icon-playlist"></i>
       </div>
     </div>
     </transition>
+      <playlist ref="playlist"></playlist>
     <!--监听currentSong发生改变时，调用audio的play播放方法-->
       <!--歌曲到加载到播放，播放的时候会派发一个事件叫canplay,timeupdate-->
       <!--歌曲请求不到地址时，会派发error-->
@@ -98,18 +99,21 @@
 
 <script type="text/ecmascript-6">
 import ProgressBar from 'base/progress-bar/progress-bar'
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
 import ProgressCircle from 'base/progress-circle/progress-circle'
-import {playMode} from 'common/js/config'
-import {shuffle} from 'common/js/util'
 import Lyric from 'lyric-parser'
 import Scroll from 'base/scroll/scroll'
+import Playlist from 'components/playlist/playlist'
+import {playerMixin} from 'common/js/mixin'
+import {playMode} from 'common/js/config'
+
 const transitionDuration = prefixStyle('transitionDuration')
 const transform = prefixStyle('transform')
 
 export default {
+  mixins: [playerMixin],
   data () {
     return {
       songReady: false,
@@ -138,18 +142,15 @@ export default {
     miniIcon () {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
-    iconMode () {
-      return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
-    },
     ...mapGetters([
       'fullScreen',
-      'playlist',
-      'currentSong',
+      // 'playlist',
+      // 'currentSong',
       // 获取当前的playing状态
       'playing',
-      'currentIndex',
-      'mode',
-      'sequenceList'
+      'currentIndex'
+      // 'mode',
+      // 'sequenceList'
     ]),
     // 当向前向后按钮不能点击时，按钮类发生变化
     disableCls () {
@@ -163,12 +164,15 @@ export default {
   methods: {
     // 提交修改
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN',
-      setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_PLAY_MODE',
-      setPlaylist: 'SET_PLAYLIST'
+      setFullScreen: 'SET_FULL_SCREEN'
+      // setPlayingState: 'SET_PLAYING_STATE',
+      // setCurrentIndex: 'SET_CURRENT_INDEX',
+      // setPlayMode: 'SET_PLAY_MODE',
+      // setPlaylist: 'SET_PLAYLIST'
     }),
+    ...mapActions([
+      'savePlayHistory'
+    ]),
     back () {
       this.setFullScreen(false)
     },
@@ -228,6 +232,9 @@ export default {
     afterLeave () {
       this.$refs.cdWrapper.style.transition = ''
       this.$refs.cdWrapper.style[transform] = ''
+    },
+    showPlaylist () {
+      this.$refs.playlist.show()
     },
     _getPosAndScale () {
       // mini播放器的小图片动画飞到上面的大图片(middle cd-wrapper)
@@ -307,6 +314,7 @@ export default {
     // 当歌曲的URL有问题的时候， this.songReady = true就永远不能执行，功能就不能执行
     ready () {
       this.songReady = true
+      this.savePlayHistory(this.currentSong)
     },
     // 歌曲加载失败，触发error函数
     error () {
@@ -316,28 +324,6 @@ export default {
     updateTime (e) {
       // 这里是时间戳
       this.currentTime = e.target.currentTime
-    },
-    changeMode () {
-      // mode要通过vuex的mutation，设置到state上
-      const mode = (this.mode + 1) % 3
-      this.setPlayMode(mode)
-      let list = null
-      if (mode === playMode.random) {
-        list = shuffle(this.sequenceList)
-      } else {
-        list = this.sequenceList
-      }
-      // 修改Playlist 但是此时currentSong不变 playlist改变的时候 也要currentindex改变
-      this.resetCurrentIndex(list)
-      this.setPlaylist(list)
-      // 此时更换模式，如果暂停歌曲，更换模式之后就会播放歌曲，这是因为currentsong改变了，触发watch事件， 但是currentSong.id没有变
-    },
-    resetCurrentIndex (list) {
-      // 在list里面找到当前歌曲对应的一个索引
-      let index = list.findIndex((item) => {
-        return item.id === this.currentSong.id
-      })
-      this.setCurrentIndex(index)
     },
     format (interval) {
       // 向下取整
@@ -371,6 +357,9 @@ export default {
     // 获取不到歌词的时候，需要进行一些清理操作  catch
     getLyric () {
       this.currentSong.getLyric().then((lyric) => {
+        if (this.currentSong.lyric !== lyric) {
+          return
+        }
         this.currentLyric = new Lyric(lyric, this.handleLyric)
         if (this.playing) {
           // 歌曲播放时，播放歌词
@@ -467,7 +456,7 @@ export default {
     currentSong (newSong, oldSong) {
     // <audio ref="audio" :src="currentSong.url"></audio>
     //   加延时，播放的时候，同时请求currentSong.url会报错
-      if (newSong.id === oldSong.id) {
+      if (!newSong.id || !newSong.url || newSong.id === oldSong.id) {
         return
       }
       // 连续切换几首歌的时候，歌词高亮会乱跳，切换歌曲的时候，currentLyric的定时器没有清理，重新getLyric之前，要把当前的给释放掉
@@ -494,7 +483,8 @@ export default {
   components: {
     ProgressBar,
     ProgressCircle,
-    Scroll
+    Scroll,
+    Playlist
   }
 }
 </script>

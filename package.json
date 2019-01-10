@@ -10,9 +10,7 @@
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js"
   },
-  "dependencies": {
-    "vue-router": "^3.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^7.1.2",
     "axios": "^0.18.0",
@@ -73,6 +71,7 @@
     "vue": "^2.5.17",
     "vue-lazyload": "^1.2.6",
     "vue-loader": "^13.3.0",
+    "vue-router": "^3.0.2",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",
     "vuex": "^3.0.1",

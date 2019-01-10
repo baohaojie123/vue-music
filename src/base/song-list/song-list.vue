@@ -2,6 +2,9 @@
   <div class="song-list">
     <ul>
       <li @click="selectItem(song,index)" v-for="(song,index) in songs" :key="song.id" class="item">
+        <div class="rank" v-show="rank">
+          <span :class="getRankCls(index)">{{getRankText(index)}}</span>
+        </div>
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
           <p class="desc">{{getDesc(song)}}</p>
@@ -16,7 +19,11 @@ export default {
   props: {
     songs: {
       type: Array,
-      default: null
+      default: () => []
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -28,6 +35,19 @@ export default {
       // 告诉外面的父组件，我这个东西被点击了，以及点击的元素是什么，索引是什么
       // 虽然item没有用 但是子组件本身相关 不关心外部，只是把自身能够提供的数据通过事件传递出去
       this.$emit('select', item, index)
+    },
+    getRankCls (index) {
+      // index从0开始
+      if (index <= 2) {
+        return `icon icon${index}`
+      } else {
+        return 'text'
+      }
+    },
+    getRankText (index) {
+      if (index > 2) {
+        return index + 1
+      }
     }
   }
 }

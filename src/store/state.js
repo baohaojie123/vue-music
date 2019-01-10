@@ -1,5 +1,5 @@
-import { playMode } from 'common/js/config'
-import { loadSearch } from 'common/js/cache'
+import {playMode} from 'common/js/config'
+import {loadSearch, loadPlay} from 'common/js/cache'
 // 公用数据 放vuex里面管理  state里面只保留最基础的数据 所有在基础数据上可以计算而来的数据直接放getters里面
 const state = {
   singer: {},
@@ -18,8 +18,10 @@ const state = {
   // 歌单对象
   disc: {},
   topList: {},
+  // 搜索历史 初始 值应该从本地缓存中去读
   searchHistory: loadSearch(),
-  playHistory: [],
+  // 播放历史
+  playHistory: loadPlay(),
   favoriteList: []
 }
 
