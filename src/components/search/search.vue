@@ -7,7 +7,8 @@
        <!--scroll组件只能根据第一个子元素的高度来确定滚不滚动 所以在hot-key search-history外面加了一个div-->
        <!--这里的hotKey和searchHistory需要异步获取，此时scroll不能滚动 所以scroll传值比较关键 ，根据scroll传data的变化，重新计算scroll的高度-->
        <!--但是这里又有hotKey 又有searchHistory，传哪个都不行，这里采用计算属性-->
-       <scroll ref="shortcut" class="shortcut" :data="shortcut">
+       <!--给scroll里有search-list的加refreshDelay-->
+       <scroll ref="shortcut" class="shortcut" :data="shortcut" :refreshDelay="refreshDelay">
          <div>
            <div class="hot-key">
              <h1 class="title">热门搜索</h1>

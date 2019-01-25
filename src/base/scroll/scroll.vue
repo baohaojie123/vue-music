@@ -34,6 +34,10 @@ export default {
     beforeScroll: {
       type: Boolean,
       default: false
+    },
+    refreshDelay: {
+      type: Number,
+      default: 20
     }
   },
   mounted () {
@@ -95,8 +99,9 @@ export default {
   watch: {
     data () {
       setTimeout(() => {
+        // 在这个时间后去refresh，我们的scroll的高度变化已经完成（这里的scroll增加或者删除一个item，动态效果实现需要0.1s）
         this.refresh()
-      }, 20)
+      }, this.refreshDelay)
     }
   }
 }

@@ -43,7 +43,8 @@ export const playerMixin = {
       'sequenceList',
       'currentSong',
       'playlist',
-      'mode'
+      'mode',
+      'favoriteList'
     ])
   },
   methods: {
@@ -53,6 +54,10 @@ export const playerMixin = {
       setPlayMode: 'SET_PLAY_MODE',
       setPlaylist: 'SET_PLAYLIST'
     }),
+    ...mapActions([
+      'saveFavoriteList',
+      'deleteFavoriteList'
+    ]),
     changeMode () {
       // mode要通过vuex的mutation，设置到state上
       const mode = (this.mode + 1) % 3
@@ -74,6 +79,25 @@ export const playerMixin = {
         return item.id === this.currentSong.id
       })
       this.setCurrentIndex(index)
+    },
+    getFavoriteIcon (song) {
+      if (this.isFavorite(song)) {
+        return 'icon-favorite'
+      }
+      return 'icon-not-favorite'
+    },
+    toggleFavorite (song) {
+      if (this.isFavorite(song)) {
+        this.deleteFavoriteList(song)
+      } else {
+        this.saveFavoriteList(song)
+      }
+    },
+    isFavorite (song) {
+      const index = this.favoriteList.findIndex((item) => {
+        return item.id === song.id
+      })
+      return index > -1
     }
   }
 }
@@ -82,7 +106,8 @@ export const playerMixin = {
 export const searchMixin = {
   data () {
     return {
-      query: ''
+      query: '',
+      refreshDelay: 100
     }
   },
   computed: {

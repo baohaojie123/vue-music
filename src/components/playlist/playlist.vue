@@ -10,14 +10,14 @@
             <span class="clear" @click="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
-        <scroll ref="listContent"  class="list-content" :data="sequenceList">
+        <scroll ref="listContent"  class="list-content" :data="sequenceList" :refreshDelay="refreshDelay">
           <!--动画名称list 渲染成ul transition-group的子元素要有一个key 区分不同的子元素-->
           <transition-group ref="list" name="list" tag="ul">
             <li :key="item.id" ref="listItem" class="item" v-for="(item, index) in sequenceList"  @click="selectItem(item, index)">
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
-              <span  class="like">
-                <i class="icon-not-favorite"></i>
+              <span @click.stop="toggleFavorite(item)" class="like">
+                <i :class="getFavoriteIcon(item)"></i>
               </span>
               <span class="delete" @click.stop="deleteOne(item)">
                 <i class="icon-delete"></i>
@@ -53,7 +53,8 @@ export default {
   mixins: [playerMixin, searchMixin],
   data () {
     return {
-      showFlag: false
+      showFlag: false,
+      refreshDelay: 100
     }
   },
   computed: {

@@ -28,4 +28,9 @@ export const searchHistory = (state) => {
 }
 
 
-export const playHistory = state => state.playHistory
+export const playHistory = (state) => {
+  console.log(state.playHistory)
+  return state.playHistory
+}
+
+export const favoriteList = state => state.favoriteList

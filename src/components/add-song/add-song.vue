@@ -13,7 +13,7 @@
       <div class="shortcut" v-show="!query">
         <switches :switches="switches" :currentIndex="currentIndex" @switch="switchItem"></switches>
         <div class="list-wrapper">
-          <scroll ref="songList" class="list-scroll" v-if="currentIndex === 0" :data="playHistory">
+          <scroll ref="songList" class="list-scroll" v-if="currentIndex === 0" :data="playHistory" :refreshDelay="refreshDelay">
             <div class="list-inner">
               <song-list  :songs="playHistory" @select="selectSong">
               </song-list>
@@ -29,12 +29,12 @@
       <div class="search-result" v-show="query">
         <suggest :query="query" :showSinger="showSinger" @select="selectSuggest" @listScroll="blurInput"></suggest>
       </div>
-      <!--<top-tip ref="topTip">-->
-        <!--<div class="tip-title">-->
-          <!--<i class="icon-ok"></i>-->
-          <!--<span class="text">1首歌曲已经添加到播放列表</span>-->
-        <!--</div>-->
-      <!--</top-tip>-->
+      <top-tip ref="topTip">
+        <div class="tip-title">
+          <i class="icon-ok"></i>
+          <span class="text">1首歌曲已经添加到播放列表</span>
+        </div>
+      </top-tip>
     </div>
   </transition>
 </template>
@@ -46,6 +46,7 @@ import SearchList from 'base/search-list/search-list'
 import SongList from 'base/song-list/song-list'
 import Suggest from 'components/suggest/suggest'
 import Switches from 'base/switches/switches'
+import TopTip from 'base/top-tip/top-tip'
 import Song from 'common/js/song'
 import {mapGetters, mapActions} from 'vuex'
 import {searchMixin} from 'common/js/mixin'
@@ -87,6 +88,7 @@ export default {
     },
     selectSuggest () {
       this.saveSearch()
+      this.showTip()
     },
     switchItem (index) {
       this.currentIndex = index
@@ -96,7 +98,11 @@ export default {
       // 这里的song是一个对象，并不是song实例 需要转换成song实例
       if (index !== 0) {
         this.insertSong(new Song(song))
+        this.showTip()
       }
+    },
+    showTip () {
+      this.$refs.topTip.show()
     },
     ...mapActions([
       'insertSong'
@@ -109,7 +115,8 @@ export default {
     SearchList,
     Suggest,
     SongList,
-    Switches
+    Switches,
+    TopTip
   }
 }
 </script>
