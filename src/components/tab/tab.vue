@@ -1,5 +1,6 @@
 <template>
   <div class="tab">
+    <!--tag 让router-link渲染成div标签  默认是a标签-->
     <router-link tag="div" class="tab-item" to="/recommend">
       <span class="tab-link">推荐</span>
     </router-link>
@@ -33,6 +34,7 @@ export default {}
       .tab-link
         padding-bottom: 5px
         color: $color-text-l
+        //router-link被激活
       &.router-link-active
         .tab-link
           color: $color-theme

@@ -52,17 +52,27 @@ export function isValidMusic (musicData) {
   return musicData.songid && musicData.albummid && (!musicData.pay || musicData.pay.payalbumprice === 0)
 }
 export function processSongsUrl (songs) {
-  return getSongsUrl(songs).then((res) => {
-    if (res.code === ERR_OK) {
-      let urlMid = res.url_mid
-      if (urlMid && urlMid.code === ERR_OK) {
-        let midUrlInfo = urlMid.data.midurlinfo
-        midUrlInfo.forEach((info, index) => {
-          let song = songs[index]
-          song.url = `http://dl.stream.qqmusic.qq.com/${info.purl}`
-        })
-      }
-    }
+  // return getSongsUrl(songs).then((res) => {
+  //   if (res.code === ERR_OK) {
+  //     let urlMid = res.url_mid
+  //     if (urlMid && urlMid.code === ERR_OK) {
+  //       let midUrlInfo = urlMid.data.midurlinfo
+  //       midUrlInfo.forEach((info, index) => {
+  //         let song = songs[index]
+  //         song.url = `http://dl.stream.qqmusic.qq.com/${info.purl}`
+  //       })
+  //     }
+  //   }
+  //   return songs
+  // })
+  if (!songs.length) {
+    return Promise.resolve(songs)
+  }
+  return getSongsUrl(songs).then((midUrlInfo) => {
+    midUrlInfo.forEach((info, index) => {
+      let song = songs[index]
+      song.url = info.purl.indexOf('http') === -1 ? `http://dl.stream.qqmusic.qq.com/${info.purl}` : info.purl
+    })
     return songs
   })
 }

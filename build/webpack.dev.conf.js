@@ -27,7 +27,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     before(app) {
       app.use(bodyParser.urlencoded({extended: true}))
       const querystring = require('querystring')
-
+      // 后端接口代理
       app.get('/api/getDiscList', function (req, res) {
         const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
         axios.get(url, {
@@ -38,6 +38,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           params: req.query
           // 这里的response是qq接口中的response 然后把response数据给我们的浏览器前端
         }).then((response) => {
+          // res.json()的作用的就是就请求的返回值的转化成json的格式。
           res.json(response.data)
         }).catch((e) => {
           console.log(e)

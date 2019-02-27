@@ -93,7 +93,7 @@
       <!--歌曲到加载到播放，播放的时候会派发一个事件叫canplay,timeupdate-->
       <!--歌曲请求不到地址时，会派发error-->
       <!--歌曲结束的时候，能派发ended事件-->
-    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
+    <audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
   </div>
 </template>
 
@@ -264,6 +264,7 @@ export default {
       }
       if (this.playlist.length === 1) {
         this.loop()
+        return
       } else {
         let index = this.currentIndex - 1
         if (index === -1) {
@@ -298,6 +299,7 @@ export default {
       }
       if (this.playlist.length === 1) {
         this.loop()
+        return
       } else {
         let index = this.currentIndex + 1
         // 顺序播放
@@ -462,12 +464,17 @@ export default {
       // 连续切换几首歌的时候，歌词高亮会乱跳，切换歌曲的时候，currentLyric的定时器没有清理，重新getLyric之前，要把当前的给释放掉
       if (this.currentLyric) {
         this.currentLyric.stop()
+        this.currentTime = 0
+        this.playingLyric = ''
+        this.currentLineNum = 0
       }
       // this.$nextTick(() => {
       //   this.$refs.audio.play()
       //   this.getLyric()
       // })
-      setTimeout(() => {
+      // 无论歌曲被切多少次，只在最后一次执行
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
         this.$refs.audio.play()
         this.getLyric()
       }, 1000)

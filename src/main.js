@@ -6,12 +6,20 @@ import App from './App'
 import router from './router'
 import store from './store'
 import fastclick from 'fastclick'
-import 'common/stylus/index.styl'
 import VueLazyload from 'vue-lazyload'
 import { SET_PLAY_HISTORY, SET_FAVORITE_LIST } from './store/mutations-type'
 import { loadPlay, loadFavorite } from 'common/js/cache'
 import { processSongsUrl } from './common/js/song'
+import 'common/stylus/index.styl'
+// 避免eslint检查
+/* eslint-disable no-unused-vars */
+import vConsole from 'vconsole'
+
+console.log('test')
+
+
 // Vue.config.productionTip = false
+// 整个body里面的元素的点击都没有300ms的延迟
 fastclick.attach(document.body)
 /* eslint-disable no-new */
 Vue.use(VueLazyload, {

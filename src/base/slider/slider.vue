@@ -37,7 +37,9 @@ export default {
     }
   },
   mounted () {
+    // 浏览器的刷新通常是17ms一次 这里要保证recommends.length存在时才进行渲染
     setTimeout(() => {
+      // 初始化操作
       this._setSliderWidth()
       this._initDots()
       this._initSlider()
@@ -88,6 +90,7 @@ export default {
         this.slider.refresh()
       }
     },
+    // 设置slider宽度
     _setSliderWidth (isResize) {
       this.children = this.$refs.sliderGroup.children
 
@@ -105,10 +108,12 @@ export default {
       }
       this.$refs.sliderGroup.style.width = width + 'px'
     },
+    // 初始化slider
     _initSlider () {
       this.slider = new BScroll(this.$refs.slider, {
         scrollX: true,
         scrollY: false,
+        // 惯性
         momentum: false,
         snap: {
           loop: this.loop,

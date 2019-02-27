@@ -1,16 +1,19 @@
 import jsonp from 'common/js/jsonp'
+// export default function jsonp (url, data, option) { 因为是 export default 所以 jsonp不加{}
 import {commonParams, options} from './config'
 import axios from 'axios'
 
 // const debug = process.env.NODE_ENV !== 'production'
-// 获取轮播图数据
+// 获取轮播图数据 此方法在组件中使用
 export function getRecommend () {
   const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
+  // 把 commonParams 和 后面{}中的内容 拼接到 第一个{}中
   const data = Object.assign({}, commonParams, {
     platform: 'h5',
     uin: 0,
     needNewCode: 1
   })
+  // 此处应该return Promise；又因jsonp()返回Promise
   return jsonp(url, data, options)
 }
 // 获取歌单数据

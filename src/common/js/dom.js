@@ -2,12 +2,13 @@ export function addClass (el, className) {
   if (hasClass(el, className)) {
     return
   }
-  // el.className 与 传进来的className不是一个
+  // el.className 与 传进来的className不是一个 className以空格拆开
   let newClass = el.className.split(' ')
   newClass.push(className)
   el.className = newClass.join(' ')
 }
 export function hasClass (el, className) {
+  // 可 以空白字符开头或者结尾
   let reg = new RegExp('(^|\\s)' + className + '(\\s|$)')
   return reg.test(el.className)
 }
